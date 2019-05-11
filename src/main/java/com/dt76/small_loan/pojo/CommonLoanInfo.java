@@ -1,5 +1,7 @@
 package com.dt76.small_loan.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public class CommonLoanInfo {
@@ -17,11 +19,12 @@ public class CommonLoanInfo {
     private Date loanDate;              //放款时间
     private String borrowType;          //放款方式
     private Boolean repaymentFinish;    //还款状态
+    private String phone;               //电话号码
 
     public CommonLoanInfo() {
     }
 
-    public CommonLoanInfo(Integer loanId, String userName, Integer contractId, Date getLoanDate, Integer loanAmount, Integer approvalAmount, Integer contractAmount, Integer borrowingPeriod, String loanType, String repaymentType, Date loanDate, String borrowType, Boolean repaymentFinish) {
+    public CommonLoanInfo(Integer loanId, String userName, Integer contractId, Date getLoanDate, Integer loanAmount, Integer approvalAmount, Integer contractAmount, Integer borrowingPeriod, String loanType, String repaymentType, Date loanDate, String borrowType, Boolean repaymentFinish, String phone) {
         this.loanId = loanId;
         this.userName = userName;
         this.contractId = contractId;
@@ -35,6 +38,7 @@ public class CommonLoanInfo {
         this.loanDate = loanDate;
         this.borrowType = borrowType;
         this.repaymentFinish = repaymentFinish;
+        this.phone = phone;
     }
 
     public Integer getLoanId() {
@@ -61,6 +65,7 @@ public class CommonLoanInfo {
         this.contractId = contractId;
     }
 
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     public Date getGetLoanDate() {
         return getLoanDate;
     }
@@ -117,6 +122,7 @@ public class CommonLoanInfo {
         this.repaymentType = repaymentType;
     }
 
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     public Date getLoanDate() {
         return loanDate;
     }
@@ -141,9 +147,17 @@ public class CommonLoanInfo {
         this.repaymentFinish = repaymentFinish;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     @Override
     public String toString() {
-        return "CommomLoanInfo{" +
+        return "CommonLoanInfo{" +
                 "loanId=" + loanId +
                 ", userName='" + userName + '\'' +
                 ", contractId=" + contractId +
@@ -157,6 +171,7 @@ public class CommonLoanInfo {
                 ", loanDate=" + loanDate +
                 ", borrowType='" + borrowType + '\'' +
                 ", repaymentFinish=" + repaymentFinish +
+                ", phone='" + phone + '\'' +
                 '}';
     }
 }

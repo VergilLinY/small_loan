@@ -24,8 +24,17 @@
       <result property="loanDate" column="alt"/>
       <result property="borrowType" column="bty"/>
       <result property="repaymentFinish" column="rps"/>
+      <result property="phone" column="pho"/>
     </association>
   </resultMap>
+  <update id="modifyCommit">
+    UPDATE afterloansummary
+    SET summary_point       = #{thePoint},
+        summary_description = #{theDescrip},
+        summary_date        = now(),
+        finished            = 1
+    WHERE loan_id = #{loanId}
+  </update>
 
 
   <select id="getPageList" parameterType="com.dt76.small_loan.pojo.SettlementQualification" resultMap="settlementInfo">
@@ -40,22 +49,27 @@
            hlp.Loan_Type           AS lt,
            bO.o_repayMode          AS orm,
            apl.al_time             AS alt,
-           bO.l_type               AS bty,
+           lt.l_name               AS bty,
            bO.repayment_status     AS rps,
            afs.loan_id             AS lid,
            afs.summary_date        AS sda,
            afs.summary_description AS sds,
            afs.summary_point       AS spo,
-           afs.finished            AS fin
+           afs.finished            AS fin,
+           u.userPhone             AS pho
     FROM afterloansummary afs
            left join borrowOrder bO on bO.bo_id = afs.loan_id
            left join user u on bO.u_id = u.userId
            left join checkState cs on afs.loan_id = cs.bo_id and cs.m_type = 3
            left join h_loan_products hlp on hlp.Product_Id = afs.loan_id
            left join approvalLoan apl on apl.bo_id = afs.loan_id
-  </select>
-  <select id="getCount" resultType="java.lang.Integer">
-    SELECT COUNT(*) FROM afterloansummary
+           left join loanType lt on bO.l_type = lt.l_typeId
+    WHERE afs.loan_id like '%${loanId}%'
+      AND u.userName like '%${name}%'
+      AND u.userPhone like '%${phone}%'
+      AND bO.c_id like '%${contractNo}%'
+      AND bO.repayment_status = 1
+      AND afs.finished = #{finish}
   </select>
 
 </mapper>

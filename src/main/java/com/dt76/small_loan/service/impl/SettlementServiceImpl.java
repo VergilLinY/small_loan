@@ -1,6 +1,7 @@
 package com.dt76.small_loan.service.impl;
 
 import com.dt76.small_loan.mapper.SettlementMapper;
+import com.dt76.small_loan.pojo.SettlementCommitInfo;
 import com.dt76.small_loan.pojo.SettlementInfo;
 import com.dt76.small_loan.pojo.SettlementQualification;
 import com.dt76.small_loan.service.SettlementService;
@@ -30,5 +31,11 @@ public class SettlementServiceImpl implements SettlementService {
         List<SettlementInfo> list = settlementMapper.getPageList(q);
         PageInfo info = new PageInfo<>(page1.getResult());
         return new PageResult<>(info.getTotal(),list);
+    }
+
+    @Override
+    public Integer modifyCommit(Integer loanId, SettlementCommitInfo q) {
+        q.setLoanId(loanId);
+        return settlementMapper.modifyCommit(q);
     }
 }
