@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dt76.small_loan.mapper.EarlyWarningMapper">
+
+  <resultMap id="EWInfo" type="com.dt76.small_loan.pojo.EarlyWarningInfo">
+    <id property="alertId" column="alert_id"/>
+    <result property="alertName" column="alert_name"/>
+    <result property="loanType" column="loan_type"/>
+    <result property="loanProduct" column="loan_product"/>
+    <result property="earlyWarningDays" column="early_warning_days"/>
+    <result property="fiveClassification" column="loan_fivelevel_classification"/>
+    <result property="open" column="whether_to_enable"/>
+    <result property="selectMember" column="select_member"/>
+    <result property="warningTime" column="alert_time"/>
+    <result property="warningType" column="alert_type"/>
+  </resultMap>
+
+
+
+  <select id="getById" resultMap="EWInfo">
+    select alert_id,
+           alert_name,
+           loan_type,
+           loan_product,
+           loan_fivelevel_classification,
+           early_warning_stage,
+           early_warning_days,
+           select_member,
+           whether_to_enable,
+           alert_time,
+           alert_type
+    from afterloanearlywarn
+    where alert_id = #{alertId}
+  </select>
+
+  <select id="getPageList" resultMap="EWInfo">
+    select
+    alert_id,
+    alert_name,
+    loan_type,
+    loan_product,
+    loan_fivelevel_classification,
+    early_warning_stage,
+    early_warning_days,
+    select_member,
+    whether_to_enable,
+    alert_time,
+    alert_type
+    from afterloanearlywarn
+    <where>
+      <if test="earlyWarningStage != '' and earlyWarningStage != null">
+        early_warning_stage = #{earlyWarningStage}
+      </if>
+      <if test="isOpen == 2">
+        and whether_to_enable = true
+      </if>
+      <if test="isOpen == 3">
+        and whether_to_enable = false
+      </if>
+    </where>
+  </select>
+  <select id="getCount" resultType="java.lang.Integer">
+    SELECT COUNT(*) FROM afterloanearlywarn
+    <where>
+      <if test="earlyWarningStage != '' and earlyWarningStage != null">
+        early_warning_stage = #{earlyWarningStage}
+      </if>
+      <if test="isOpen == 2">
+        and whether_to_enable = true
+      </if>
+      <if test="isOpen == 3">
+        and whether_to_enable = false
+      </if>
+    </where>
+  </select>
+
+  <insert id="addNew" parameterType="com.dt76.small_loan.pojo.EarlyWarningInfo">
+    INSERT INTO afterloanearlywarn (alert_id, alert_name, loan_type, loan_product, loan_fivelevel_classification,
+                                    early_warning_days, select_member, whether_to_enable, alert_time, alert_type)
+    VALUES (#{alertId}, #{alertName}, #{loanType}, #{loanProduct}, #{fiveClassification}, #{earlyWarningDays},
+            #{selectMember}, #{open}, #{warningTime}, #{warningType})
+  </insert>
+
+</mapper>

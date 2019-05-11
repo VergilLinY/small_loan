@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="shortcut icon" href="../../images/favicon.png">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <title>还款管理</title>
+    <style type="text/css">
+        /* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+
+<body>
+<div class="content-wrapper">
+    <div class="page-header">
+        <h3 class="page-title">
+            Forms
+        </h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Forms</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Basic elements</li>
+            </ol>
+        </nav>
+    </div>
+    <div id="app" class="row">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">新增贷后预警</h4>
+                    <br />
+                    <el-form ref="form" :model="form">
+                        <el-form-item label="预警名称:">
+                            <el-input v-model="form.user" placeholder="请为该预警定义一个名称" style="width:300px">
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item label="贷款类型:">
+                            <el-select v-model="form.select1">
+                                <el-option label="电话检查"></el-option>
+                                <el-option label="实地检查"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="贷款产品:">
+                            <el-select v-model="form.select2">
+                                <el-option label="首次检查"></el-option>
+                                <el-option label="日常检查"></el-option>
+                                <el-option label="逾期检查"></el-option>
+                                <el-option label="其它"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="贷款五级分类:">
+                            <el-select v-model="form.select3">
+                                <el-option label="首次检查"></el-option>
+                                <el-option label="日常检查"></el-option>
+                                <el-option label="逾期检查"></el-option>
+                                <el-option label="其它"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="预警阶段:">
+                            <el-select v-model="form.select4">
+                                <el-option label="首次检查"></el-option>
+                                <el-option label="日常检查"></el-option>
+                                <el-option label="逾期检查"></el-option>
+                                <el-option label="其它"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="提前预警天数:">
+                            <el-input-number size="small" v-model="form.earlyWarningDays"></el-input-number>
+                        </el-form-item>
+                        <el-form-item label="预警发送时间:">
+                            <el-radio v-model="form.radio1" label="1">10:00</el-radio>
+                            <el-radio v-model="form.radio1" label="2">14:00</el-radio>
+                            <el-radio v-model="form.radio1" label="3">18:00</el-radio>
+                            <el-radio v-model="form.radio1" label="4">22:00</el-radio>
+                        </el-form-item>
+                        <el-form-item label="接收成员:">
+
+                        </el-form-item>
+                        <el-form-item label="是否启用:">
+                            <el-switch v-model="form.isOpen" active-color="#13ce66" inactive-color="#ff4949">
+                            </el-switch>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="warning" icon="el-icon-s-promotion" @click="onSubmit()">提交</el-button>
+                            <el-button type="info" icon="el-icon-switch-button" @click="onBack()">返回</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="../../vendors/js/vendor.bundle.base.js"></script>
+<script src="../../vendors/js/vendor.bundle.addons.js"></script>
+<script src="../../js/off-canvas.js"></script>
+<script src="../../js/misc.js"></script>
+<script src="../../js/file-upload.js"></script>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    var earlyE = new Vue({
+        el: '#app',
+        data: {
+            form: {
+                user: '',
+                textarea: '',
+                select1: '电话检查',
+                select2: '首次检查',
+                select3: '正常贷款',
+                radio1: '1',
+                earlyWarningDays: 3,
+                isOpen: true
+            }
+        },
+        created() {
+            //this.fetchData()
+        },
+        methods: {
+            fetchData() {
+                axios.get('http://localhost:8080/tryAxios').then(function (response) {
+                    insA.$data.tableData = response.data.repaymentInfo
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            onSubmit() {
+
+            },
+            onBack() {
+                window.location.href = 'http://localhost:8080/earlyWarningManager'
+            }
+        }
+    });
+</script>
+
+</html>

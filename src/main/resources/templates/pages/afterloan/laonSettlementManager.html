@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="shortcut icon" href="../../images/favicon.png">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <title>还款管理</title>
+    <style type="text/css">
+        /* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+
+<body>
+<div class="content-wrapper">
+    <div class="page-header">
+        <h3 class="page-title">
+            Forms
+        </h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Forms</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Basic elements</li>
+            </ol>
+        </nav>
+    </div>
+    <div id="app" class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal"
+                             @select="handleSelect">
+                        <el-menu-item index="1">未结项</el-menu-item>
+                        <el-menu-item index="2">已结项</el-menu-item>
+                    </el-menu><br /><br />
+                    <el-form :inline="true" :model="tableData" class="demo-form-inline">
+                        <el-form-item>
+                            <el-input v-model="search.loanId" placeholder="借款编号" style="width:120px"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input v-model="search.name" placeholder="姓名" style="width:120px"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input v-model="search.phone" placeholder="手机号" style="width:180px"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input v-model="search.contractNo" placeholder="合同号" style="width:130px"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" icon="el-icon-search" @click="onSubmit()">查询</el-button>
+                        </el-form-item>
+                    </el-form><br />
+                    <h4 class="card-title">贷款结项列表</h4>
+                    <template>
+                        <el-table :data="tableData" style="width: 100%">
+                            <el-table-column type="selection" width="55">
+                            </el-table-column>
+                            <el-table-column prop="loanId" label="借款编号" width="80" align="center">
+                            </el-table-column>
+                            <el-table-column prop="borrowOrder.user.userName" label="姓名" width="80" align="center">
+                            </el-table-column>
+                            <el-table-column prop="borrowOrder.cId" label="合同号" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column prop="loanId" label="合同金额" width="80" align="center">
+                            </el-table-column>
+                            <el-table-column prop="loanId" label="借款期限" width="80" align="center">
+                            </el-table-column>
+                            <el-table-column prop="borrowOrder.hLoanProducts.loanType" label="贷款类型" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column prop="loanId" label="还款方式" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column prop="borrowOrder.oCreateTime" label="放款时间" width="120" align="center">
+                            </el-table-column>
+                            <el-table-column prop="loanId" label="放款方式" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column prop="loanId" label="还款状态" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column prop="finished" label="是否结项" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column prop="summaryDate" label="结项时间" width="120" align="center">
+                            </el-table-column>
+                            <el-table-column prop="summaryPoint" label="贷款评分" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column prop="summaryDescription" label="风控结项评语" width="150" align="center">
+                            </el-table-column>
+                            <el-table-column fixed="right" label="操作" width="210" align="center">
+                                <template slot-scope="scope">
+                                    <el-button size="mini" @click="onCheck(scope.row.alertId)" type="success">查看
+                                    </el-button>
+                                    <el-button size="mini" @click="onEdit(scope.row.alertId)" type="warning">结项办理
+                                    </el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table><br />
+                        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                                       :current-page="currentPage" :page-sizes="[5, 10, 20, 40]" :page-size="pageSize"
+                                       layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
+                        </el-pagination>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="../../vendors/js/vendor.bundle.base.js"></script>
+<script src="../../vendors/js/vendor.bundle.addons.js"></script>
+<script src="../../js/off-canvas.js"></script>
+<script src="../../js/misc.js"></script>
+<script src="../../js/file-upload.js"></script>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    var settleM = new Vue({
+        el: '#app',
+        data: {
+            activeIndex: '1',
+            search: {
+                loanId: '',
+                name: '',
+                phone: '',
+                contractNo: '',
+                finish: false
+            },
+            currentPage: 1, //初始页
+            pageSize: 5,    //每页的数据
+            totalSize: 0,
+            tableData: [],
+        },
+        created() {
+            this.fetchData()
+        },
+        methods: {
+            fetchData() {
+                var cp = String(this.currentPage);
+                var ps = String(this.pageSize);
+                var q = this.search;
+                this.axiosMessage(cp, ps, q)
+            },
+            // 初始页currentPage、初始每页数据数pagesize和数据data
+            handleSizeChange: function (size) {
+                earlyM.$data.pageSize = size;
+                console.log("size " + size);
+                this.fetchData()
+            },
+            handleCurrentChange: function (currentPage) {
+                this.$data.currentPage = currentPage;
+                this.fetchData()
+            },
+            onCheck(alertId) {
+                window.location.href = 'http://localhost:8080/earlyWarning/check/' + alertId
+            },
+            onEdit(alertId) {
+                window.location.href = 'http://localhost:8080//earlyWarning/edit/' + alertId
+            },
+            onSubmit() {
+                earlyM.$data.currentPage = 1;
+                this.fetchData()
+            },
+            axiosMessage(cp, ps, q) {
+                axios.post(('http://localhost:8080/loanSettlement/list/' + cp + '/' + ps), q).then(function (response) {
+                    settleM.$data.tableData = response.data.list;
+                    // settleM.$data.totalSize = response.data.total;
+                    console.log(settleM.$data.tableData);
+                    console.log(response.data.list)
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            handleSelect(){
+                console.log("change")
+            }
+        }
+    });
+</script>
+
+</html>

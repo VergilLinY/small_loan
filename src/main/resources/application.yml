@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    username: root
+    password: '031200'
+    url: 'jdbc:mysql://47.102.156.57:3306/smallloan'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+  type-aliases-package: com.dt76.small_loan.pojo
+  mapperLocations: classpath:mapper/*.xml

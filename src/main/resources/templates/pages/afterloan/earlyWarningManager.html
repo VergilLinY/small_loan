@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="shortcut icon" href="../../images/favicon.png">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <title>还款管理</title>
+    <style type="text/css">
+        /* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+
+<body>
+<div class="content-wrapper">
+    <div class="page-header">
+        <h3 class="page-title">
+            Forms
+        </h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Forms</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Basic elements</li>
+            </ol>
+        </nav>
+    </div>
+    <div id="app" class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <el-form :inline="true" :model="tableData" class="demo-form-inline">
+                        <el-form-item>
+                            <el-select clearable v-model="qualification.earlyWarningStage" placeholder="预警阶段" style="width:180px">
+                                <el-option
+                                        v-for="item in options1"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-select clearable value-key="value" v-model="qualification.isOpen" placeholder="启用状态" style="width:110px">
+                                <el-option
+                                        v-for="item in options2"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" icon="el-icon-search" @click="onSubmit()">查询</el-button>
+                            <el-button type="success" icon="el-icon-circle-plus" @click="onAdd()">新增</el-button>
+                        </el-form-item>
+                    </el-form>
+                    <h4 class="card-title">预警列表</h4>
+                    <template>
+                        <el-table :data="tableData" style="width: 100%">
+                            <el-table-column prop="alertId" label="预警编号" width="100" align="center">
+                            </el-table-column>
+                            <el-table-column prop="alertName" label="预警名称" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column prop="loanType" label="贷款类型" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column prop="loanProduct" label="借款产品" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column prop="fiveClassification" label="预警阶段" width="100" align="center">
+                            </el-table-column>
+                            <el-table-column prop="earlyWarningDays" label="提前预警天数" width="120" align="center">
+                            </el-table-column>
+                            <el-table-column prop="warningTime" label="提醒时间" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column prop="warningType" label="发送方式" width="90" align="center">
+                            </el-table-column>
+                            <el-table-column label="启用状态" width="90" align="center">
+                                <template slot-scope="scope">
+                                    <el-switch v-model="scope.row.open" active-color="#13ce66"
+                                               inactive-color="#ff4949">
+                                    </el-switch>
+                                </template>
+                            </el-table-column>
+                            <el-table-column label="操作" width="210" align="center">
+                                <template slot-scope="scope">
+                                    <el-button size="mini" @click="onCheck(scope.row.alertId)" type="success">查看
+                                    </el-button>
+                                    <el-button size="mini" @click="onEdit(scope.row.alertId)" type="warning">修改
+                                    </el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table><br/>
+                        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                                       :current-page="currentPage" :page-sizes="[5, 10, 20, 40]" :page-size="pageSize"
+                                       layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
+                        </el-pagination>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="../../vendors/js/vendor.bundle.base.js"></script>
+<script src="../../vendors/js/vendor.bundle.addons.js"></script>
+<script src="../../js/off-canvas.js"></script>
+<script src="../../js/misc.js"></script>
+<script src="../../js/file-upload.js"></script>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    var earlyM = new Vue({
+        el: '#app',
+        data: {
+            qualification: {
+                earlyWarningStage: '',
+                isOpen: ''
+            },
+            currentPage: 1, //初始页
+            pageSize: 5,    //每页的数据
+            totalSize: 1,
+            tableData: [],
+            options1: [{
+                value: '即将到期',
+                label: '即将到期'
+            }, {
+                value: '已经逾期的贷款',
+                label: '已经逾期的贷款'
+            }],
+            options2: [{
+                value: '2',
+                label: '启用'
+            }, {
+                value: '3',
+                label: '未启用'
+            }]
+        },
+        created() {
+            this.fetchData()
+        },
+        methods: {
+            fetchData() {
+                var cp = String(this.currentPage);
+                var ps = String(this.pageSize);
+                var q = this.qualification;
+                this.axiosMessage(cp,ps,q)
+            },
+            // 初始页currentPage、初始每页数据数pagesize和数据data
+            handleSizeChange: function (size) {
+                earlyM.$data.pageSize = size;
+                console.log("size "+ size);
+                this.fetchData()
+            },
+            handleCurrentChange: function (currentPage) {
+                this.$data.currentPage = currentPage;
+                this.fetchData()
+            },
+            onCheck(alertId) {
+                window.location.href = 'http://localhost:8080/earlyWarning/check/' + alertId
+            },
+            onAdd() {
+                window.location.href = 'http://localhost:8080/earlyWarning/add/'
+            },
+            onEdit(alertId) {
+                window.location.href = 'http://localhost:8080//earlyWarning/edit/' + alertId
+            },
+            onSubmit() {
+                earlyM.$data.currentPage = 1;
+                this.fetchData()
+            },
+            axiosMessage(cp,ps,q){
+                axios.post(('http://localhost:8080/earlyWarning/list/' + cp + '/' + ps), q).then(function (response) {
+                    earlyM.$data.tableData = response.data.list;
+                    earlyM.$data.totalSize = response.data.total;
+                    console.log(response.data.list)
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            }
+        }
+    });
+</script>
+
+</html>

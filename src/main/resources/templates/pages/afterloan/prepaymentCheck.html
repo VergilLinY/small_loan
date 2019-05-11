@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="../../vendors/iconfonts/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="shortcut icon" href="../../images/favicon.png">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <title>还款管理</title>
+    <style type="text/css">
+        /* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {opacity: 0.99}
+            to {opacity: 1}
+        }
+        @keyframes chartjs-render-animation {
+            from {opacity: 0.99}
+            to {opacity: 1}
+        }
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+
+<body>
+<div class="content-wrapper">
+    <div class="page-header">
+        <h3 class="page-title">
+            客户【xxx】办理提前还款
+        </h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">Forms</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Basic elements</li>
+            </ol>
+        </nav>
+    </div>
+    <div id="app" class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <template>
+                        <el-table :data="tableData" style="width: 100%">
+                            <el-table-column prop="repaymentCycle" label="还款期数" width="80"
+                                             align="center"></el-table-column>
+                            <el-table-column prop="defaultRepaymentDate" label="应还款日" width="100"
+                                             align="center"></el-table-column>
+                            <el-table-column prop="repaymentDate" label="实际还款日" width="100"
+                                             align="center"></el-table-column>
+                            <el-table-column prop="principal" label="本金" width="70" align="center"></el-table-column>
+                            <el-table-column prop="interest" label="利息" width="70" align="center"></el-table-column>
+                            <el-table-column prop="managementFee" label="管理费" width="70"
+                                             align="center"></el-table-column>
+                            <el-table-column prop="contractAmount" label="还款总额" width="80"
+                                             align="center"></el-table-column>
+                            <el-table-column prop="reductionAmount" label="减免金额" width="80"
+                                             align="center"></el-table-column>
+                            <el-table-column prop="repaymentCycle" label="逾期天数" width="80"
+                                             align="center"></el-table-column>
+                            <el-table-column prop="status" label="状态" width="90" align="center"></el-table-column>
+                            <el-table-column prop="repaymentComment" label="还款备注" width="110"
+                                             align="center"></el-table-column>
+                        </el-table>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <el-form ref="form" :model="form" label-width="80px">
+                        <el-form-item label="提前方式">
+                            <el-input style="width:190px" :disabled="true" placeholder="全部提前结清"></el-input>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            期数：<el-input style="width:90px" :disabled="true" placeholder="3"></el-input>
+                        </el-form-item>
+                        <el-form-item label="还款总额">
+                            <el-input style="width:110px" :disabled="true" placeholder="0"></el-input>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            管理费：<el-input style="width:90px" :disabled="true" placeholder="300"></el-input>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            实际还款日期：<el-input style="width:150px" :disabled="true" placeholder="2018-9-10">
+                        </el-input>
+                        </el-form-item>
+                        <el-form-item label="是否收利" width="220px">
+                            <el-switch v-model="form.getInterest" active-text="收取利息" inactive-text="不收取">
+                            </el-switch>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            利息金额：<el-input style="width:150px" :disabled="!form.getInterest" v-model="form.price">
+                        </el-input>
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item label="备注">
+                            <el-input type="textarea" :rows="5" placeholder="请输入内容" v-model="form.theTextarea" style="width:450px">
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="onSubmit">确认提交</el-button>
+                            <el-button>返回</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="../../vendors/js/vendor.bundle.base.js"></script>
+<script src="../../vendors/js/vendor.bundle.addons.js"></script>
+<script src="../../js/off-canvas.js"></script>
+<script src="../../js/misc.js"></script>
+<script src="../../js/file-upload.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    var prCheck = new Vue({
+        el: '#app',
+        data: {
+            tableData: [],
+            form: {
+                name: '',
+                region: '',
+                date1: '',
+                date2: '',
+                delivery: false,
+                type: [],
+                resource: '',
+                desc: '',
+                getInterest: true,
+                price: null,
+                theTextarea: ''
+            }
+        },
+        created() {
+            //this.fetchData();
+        },
+        methods: {
+            fetchData() {
+                console.log("fetch");
+                axios.get('http://localhost:8080/tryAxios').then(function (response) {
+                    //view.$data.tableData = response.data.repaymentInfo
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            onSubmit() {
+                console.log('submit!');
+            }
+        }
+    });
+</script>
+
+</html>

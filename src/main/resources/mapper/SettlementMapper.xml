@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dt76.small_loan.mapper.SettlementMapper">
+
+  <resultMap id="settlementInfo" type="com.dt76.small_loan.pojo.SettlementInfo">
+    <id property="loanId" column="lid"/>
+    <result property="summaryDate" column="sumDate"/>
+    <result property="summaryDescription" column="sumDes"/>
+    <result property="summaryPoint" column="sumPoint"/>
+    <result property="finished" column="fin"/>
+    <association property="borrowOrder" column="lid" select="borrowQryById"/>
+  </resultMap>
+
+  <resultMap id="UserOrder" type="com.dt76.small_loan.pojo.BorrowOrder">
+    <id property="boId" column="boId"/>
+    <result property="oCreateTime" column="oCreateTime"/>
+    <result property="oWantedMoney" column="oWantedMoney"/>
+    <result property="oRepayMode" column="oRepayMode"/>
+    <result property="oLoanTime" column="oLoanTime"/>
+    <result property="boType" column="boType"/>
+    <association property="user" javaType="com.dt76.small_loan.pojo.User">
+      <result property="userName" column="userName"/>
+      <result property="userPhone" column="userPhone"/>
+    </association>
+    <association property="hLoanProducts" javaType="com.dt76.small_loan.pojo.HLoanProducts">
+      <result property="loanType" column="loanType"/>
+    </association>
+    <association property="employee" javaType="com.dt76.small_loan.pojo.Employee">
+      <result property="empName1" column="empName1"/>
+      <result property="empName2" column="empName2"/>
+    </association>
+    <collection property="checkStates" column="csId" javaType="ArrayList"
+                ofType="com.dt76.small_loan.pojo.CheckState"
+                select="com.dt76.small_loan.mapper.CheckStateMapper.qryAllCheckStateById">
+      <id property="csId" column="csId"/>
+      <result property="mType" column="mType"/>
+      <result property="mApproveMoney" column="mApproveMoney"/>
+    </collection>
+  </resultMap>
+  <select id="getPageList" parameterType="com.dt76.small_loan.pojo.SettlementQualification" resultMap="settlementInfo">
+    select afs.loan_id             as lid,
+           afs.summary_date        as sumDate,
+           afs.summary_description as sumDes,
+           afs.summary_point       as sumPoint,
+           afs.finished            as fin
+    from afterloansummary afs
+  </select>
+
+  <select id="borrowQryById" resultMap="UserOrder">
+    select bO.bo_id           as boId,
+           u.userName         as userName,
+           bO.o_createTime    as oCreateTime,
+           u.userPhone        as userPhone,
+           bO.o_wantedMoney   as oWantedMoney,
+           bO.o_repayMode     as oRepayMode,
+           bO.o_loanTime      as oLoanTime,
+           hps.Loan_Type      as loanType,
+           cs2.bo_id          as csId,
+           cs2.m_approveMoney as mApproveMoney,
+           cs2.m_type         as mType,
+           bO.bo_type         as boType,
+           e1.emp_name        as empName1,
+           e2.emp_name        as empName2
+    from borrowOrder bO,
+         user u,
+         checkState cs1,
+         checkState cs2,
+         employee e1,
+         employee e2,
+         h_loan_products hps
+    where bO.bo_id = #{id}
+  </select>
+</mapper>
