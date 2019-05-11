@@ -1,11 +1,10 @@
 package com.dt76.small_loan.service;
 
-import com.dt76.small_loan.pojo.SettlementInfo;
 import com.dt76.small_loan.pojo.SettlementQualification;
-
-import java.util.List;
+import com.dt76.small_loan.utils.PageResult;
 
 public interface SettlementService {
 
-    List<SettlementInfo> getPageList(Integer page, Integer size, SettlementQualification q);
+    PageResult getPageList(Integer page, Integer size, SettlementQualification q);
+
 }

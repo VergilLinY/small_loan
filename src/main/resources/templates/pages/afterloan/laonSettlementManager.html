@@ -85,25 +85,23 @@
                             </el-table-column>
                             <el-table-column prop="loanId" label="借款编号" width="80" align="center">
                             </el-table-column>
-                            <el-table-column prop="borrowOrder.user.userName" label="姓名" width="80" align="center">
+                            <el-table-column prop="commonLoanInfo.userName" label="姓名" width="80" align="center">
                             </el-table-column>
-                            <el-table-column prop="borrowOrder.cId" label="合同号" width="90" align="center">
+                            <el-table-column prop="commonLoanInfo.contractId" label="合同号" width="90" align="center">
                             </el-table-column>
-                            <el-table-column prop="loanId" label="合同金额" width="80" align="center">
+                            <el-table-column prop="commonLoanInfo.contractAmount" label="合同金额" width="80" align="center">
                             </el-table-column>
-                            <el-table-column prop="loanId" label="借款期限" width="80" align="center">
+                            <el-table-column prop="commonLoanInfo.borrowingPeriod" label="借款期限" width="80" align="center">
                             </el-table-column>
-                            <el-table-column prop="borrowOrder.hLoanProducts.loanType" label="贷款类型" width="90" align="center">
+                            <el-table-column prop="commonLoanInfo.loanType" label="贷款类型" width="90" align="center">
                             </el-table-column>
-                            <el-table-column prop="loanId" label="还款方式" width="90" align="center">
+                            <el-table-column prop="commonLoanInfo.repaymentType" label="还款方式" width="90" align="center">
                             </el-table-column>
-                            <el-table-column prop="borrowOrder.oCreateTime" label="放款时间" width="120" align="center">
+                            <el-table-column prop="commonLoanInfo.loanDate" label="放款时间" width="120" align="center">
                             </el-table-column>
-                            <el-table-column prop="loanId" label="放款方式" width="90" align="center">
+                            <el-table-column prop="commonLoanInfo.borrowType" label="放款方式" width="90" align="center">
                             </el-table-column>
-                            <el-table-column prop="loanId" label="还款状态" width="90" align="center">
-                            </el-table-column>
-                            <el-table-column prop="finished" label="是否结项" width="90" align="center">
+                            <el-table-column prop="commonLoanInfo.repaymentFinish" label="还款状态" width="90" align="center">
                             </el-table-column>
                             <el-table-column prop="summaryDate" label="结项时间" width="120" align="center">
                             </el-table-column>
@@ -191,10 +189,9 @@
             },
             axiosMessage(cp, ps, q) {
                 axios.post(('http://localhost:8080/loanSettlement/list/' + cp + '/' + ps), q).then(function (response) {
-                    settleM.$data.tableData = response.data.list;
-                    // settleM.$data.totalSize = response.data.total;
-                    console.log(settleM.$data.tableData);
-                    console.log(response.data.list)
+                    settleM.$data.tableData = response.data.rows;
+                    settleM.$data.totalSize = response.data.total;
+                    console.log(response.data)
                 }).catch(function (error) {
                     console.log(error);
                 });

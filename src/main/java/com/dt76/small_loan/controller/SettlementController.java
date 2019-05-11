@@ -3,6 +3,7 @@ package com.dt76.small_loan.controller;
 import com.dt76.small_loan.pojo.SettlementInfo;
 import com.dt76.small_loan.pojo.SettlementQualification;
 import com.dt76.small_loan.service.SettlementService;
+import com.dt76.small_loan.utils.PageResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +26,7 @@ public class SettlementController {
 
     @ResponseBody
     @PostMapping("/loanSettlement/list/{page}/{size}")
-    public Map<String, Object> getPageAll(@RequestBody SettlementQualification q, @PathVariable Integer page, @PathVariable Integer size){
-        Map<String, Object> map = new HashMap<>();
-        map.put("list",settlementService.getPageList(page, size, q));
-        return map;
+    public PageResult<SettlementInfo> getPageAll(@RequestBody SettlementQualification q, @PathVariable Integer page, @PathVariable Integer size){
+        return settlementService.getPageList(page, size, q);
     }
 }
