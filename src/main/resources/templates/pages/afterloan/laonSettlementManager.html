@@ -62,7 +62,7 @@
                         <el-menu-item index="2">已结项</el-menu-item>
                     </el-menu>
                     <br/><br/>
-                    <el-form :inline="true" :model="tableData" class="demo-form-inline">
+                    <el-form :inline="true" ref="search" :model="search" class="demo-form-inline">
                         <el-form-item>
                             <el-input v-model="search.loanId" placeholder="借款编号" style="width:120px"></el-input>
                         </el-form-item>
@@ -133,7 +133,7 @@
                         </el-pagination>
                     </template>
                     <el-dialog title="办理结项" :visible.sync="dialogVisible1" width="40%">
-                        <el-form>
+                        <el-form ref="optionContain" :model="optionContain">
                             <el-form-item label="评分" >
                                 <el-rate v-model="optionContain.thePoint"></el-rate>
                             </el-form-item>
@@ -143,7 +143,7 @@
                             </el-form-item>
                         </el-form>
                         <div slot="footer" class="dialog-footer">
-                            <el-button @click="dialogFormVisible1 = false">取 消</el-button>
+                            <el-button @click="dialogVisible1 = false">取 消</el-button>
                             <el-button type="primary" @click="commitFinish()">确 定</el-button>
                         </div>
                     </el-dialog>
@@ -186,8 +186,7 @@
                 thePoint: 5,
                 theDescrip: '',
                 theId: '',
-            },
-            iconClasses: ['icon-rate-face-1', 'icon-rate-face-2', 'icon-rate-face-3']
+            }
         },
         created() {
             this.fetchData()
@@ -201,8 +200,8 @@
             },
             // 初始页currentPage、初始每页数据数pagesize和数据data
             handleSizeChange: function (size) {
+                settleM.$data.currentPage = 1;
                 settleM.$data.pageSize = size;
-                console.log("size " + size);
                 this.fetchData()
             },
             handleCurrentChange: function (currentPage) {
@@ -233,7 +232,6 @@
                 }else{
                     settleM.$data.search.finish = 1
                 }
-                console.log(index);
                 this.fetchData()
             },
             commitFinish() {

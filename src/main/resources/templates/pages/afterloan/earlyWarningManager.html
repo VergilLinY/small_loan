@@ -56,9 +56,10 @@
         <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
-                    <el-form :inline="true" :model="tableData" class="demo-form-inline">
+                    <el-form :inline="true" :model="qualification" class="demo-form-inline">
                         <el-form-item>
-                            <el-select clearable v-model="qualification.earlyWarningStage" placeholder="预警阶段" style="width:180px">
+                            <el-select clearable v-model="qualification.earlyWarningStage" placeholder="预警阶段"
+                                       style="width:180px">
                                 <el-option
                                         v-for="item in options1"
                                         :key="item.value"
@@ -68,7 +69,8 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item>
-                            <el-select clearable value-key="value" v-model="qualification.isOpen" placeholder="启用状态" style="width:110px">
+                            <el-select clearable value-key="value" v-model="qualification.isOpen" placeholder="启用状态"
+                                       style="width:110px">
                                 <el-option
                                         v-for="item in options2"
                                         :key="item.value"
@@ -104,6 +106,7 @@
                             <el-table-column label="启用状态" width="90" align="center">
                                 <template slot-scope="scope">
                                     <el-switch v-model="scope.row.open" active-color="#13ce66"
+                                               @change="handleSChange(scope.row)"
                                                inactive-color="#ff4949">
                                     </el-switch>
                                 </template>
@@ -116,12 +119,88 @@
                                     </el-button>
                                 </template>
                             </el-table-column>
-                        </el-table><br/>
+                        </el-table>
+                        <br/>
                         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
                                        :current-page="currentPage" :page-sizes="[5, 10, 20, 40]" :page-size="pageSize"
                                        layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
                         </el-pagination>
                     </template>
+                    <el-dialog title="办理结项" :visible.sync="dialogFormVisible1" width="34%">
+                        <el-form ref="form" :model="form">
+                            <el-form-item label="预警名称:">
+                                <el-input v-model="form.alertName" placeholder="请为该预警定义一个名称" style="width:300px">
+                                </el-input>
+                            </el-form-item>
+                            <el-form-item label="贷款类型:">
+                                <el-select v-model="form.loanType">
+                                    <el-option
+                                            v-for="item in options6"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="贷款产品:">
+                                <el-select v-model="form.loanProduct">
+                                    <el-option
+                                            v-for="item in options7"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="贷款五级分类:">
+                                <el-select v-model="form.fiveClassification">
+                                    <el-option
+                                            v-for="item in options3"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="预警方式:">
+                                <el-select clearable value-key="value" v-model="form.warningType"
+                                           style="width:110px">
+                                    <el-option
+                                            v-for="item in options5"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="提前预警天数:">
+                                <el-input-number size="small" v-model="form.earlyWarningDays"></el-input-number>
+                            </el-form-item>
+                            <el-form-item label="预警发送时间:">
+                                <el-radio v-model="form.warningTime" label="10:00">10:00</el-radio>
+                                <el-radio v-model="form.warningTime" label="14:00">14:00</el-radio>
+                                <el-radio v-model="form.warningTime" label="18:00">18:00</el-radio>
+                                <el-radio v-model="form.warningTime" label="22:00">22:00</el-radio>
+                            </el-form-item>
+                            <el-form-item label="接收成员:">
+                                <el-select v-model="form.selectMember">
+                                    <el-option
+                                            v-for="item in options4"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="是否启用:">
+                                <el-switch v-model="form.open" active-color="#13ce66" inactive-color="#ff4949">
+                                </el-switch>
+                            </el-form-item>
+                        </el-form>
+                        <div v-if="showDialogButton === true" slot="footer" class="dialog-footer">
+                            <el-button type="success" icon="el-icon-s-promotion" @click="commitFinish()">提交</el-button>
+                        </div>
+                    </el-dialog>
                 </div>
             </div>
         </div>
@@ -151,20 +230,33 @@
             pageSize: 5,    //每页的数据
             totalSize: 1,
             tableData: [],
-            options1: [{
-                value: '即将到期',
-                label: '即将到期'
-            }, {
-                value: '已经逾期的贷款',
-                label: '已经逾期的贷款'
-            }],
-            options2: [{
-                value: '2',
-                label: '启用'
-            }, {
-                value: '3',
-                label: '未启用'
-            }]
+            options1: [{value: '即将到期', label: '即将到期'}, {value: '已经逾期的贷款', label: '已经逾期的贷款'}],
+            options2: [{value: '2', label: '启用'}, {value: '3', label: '未启用'}],
+            dialogFormVisible1: false,
+            showDialogButton: true,
+            form: {
+                alertId: '',
+                alertName: '',
+                loanType: '个人信用',
+                loanProduct: '工薪贷',
+                fiveClassification: '正常贷款',
+                earlyWarningDays: 3,
+                warningTime: '10:00',
+                selectMember: '',
+                warningType: '',
+                open: true,
+            },
+            options6: [{value: '个人信用', label: '个人信用'}, {value: '银行授信', label: '银行授信'}],
+            options7: [{value: '工薪贷', label: '工薪贷'}, {value: '悦心贷', label: '悦心贷'}],
+            options3: [{value: '正常贷款', label: '正常贷款'}, {value: '关注贷款', label: '关注贷款'}, {
+                value: '次级贷款',
+                label: '次级贷款'
+            }, {value: '可疑贷款', label: '可疑贷款'}, {value: '损失贷款', label: '损失贷款'}],
+            options4: [{value: '小黑', label: '小黑'}, {value: '小白', label: '小白'}, {
+                value: '张无忌',
+                label: '张无忌'
+            }, {value: '张三丰', label: '张三丰'}, {value: '梅超风', label: '梅超风'}],
+            options5: [{value: '短信', label: '短信'}, {value: '邮件', label: '邮件'}, {value: '电话', label: '电话'}]
         },
         created() {
             this.fetchData()
@@ -174,12 +266,12 @@
                 var cp = String(this.currentPage);
                 var ps = String(this.pageSize);
                 var q = this.qualification;
-                this.axiosMessage(cp,ps,q)
+                this.axiosMessage(cp, ps, q)
             },
             // 初始页currentPage、初始每页数据数pagesize和数据data
             handleSizeChange: function (size) {
                 earlyM.$data.pageSize = size;
-                console.log("size "+ size);
+                console.log("size " + size);
                 this.fetchData()
             },
             handleCurrentChange: function (currentPage) {
@@ -187,23 +279,108 @@
                 this.fetchData()
             },
             onCheck(alertId) {
-                window.location.href = 'http://localhost:8080/earlyWarning/check/' + alertId
+                axios.get('http://localhost:8080/earlyWarning/getId/' + alertId).then(function (response) {
+                    earlyM.$data.form = response.data.ew;
+                    earlyM.$data.showDialogButton = false;
+                    earlyM.$data.dialogFormVisible1 = true
+                }).catch(function (error) {
+                    console.log(error);
+                });
             },
             onAdd() {
-                window.location.href = 'http://localhost:8080/earlyWarning/add/'
+                earlyM.$data.form.alertId = '';
+                earlyM.$data.form.alertName = '';
+                earlyM.$data.form.loanType = '个人信用';
+                earlyM.$data.form.loanProduct = '工薪贷';
+                earlyM.$data.form.fiveClassification = '正常贷款';
+                earlyM.$data.form.earlyWarningDays = 3;
+                earlyM.$data.form.warningTime = '10:00';
+                earlyM.$data.form.selectMember = '';
+                earlyM.$data.form.warningType = '';
+                earlyM.$data.form.open = true;
+                earlyM.$data.showDialogButton = true;
+                earlyM.$data.dialogFormVisible1 = true;
             },
             onEdit(alertId) {
-                window.location.href = 'http://localhost:8080//earlyWarning/edit/' + alertId
+                axios.get('http://localhost:8080/earlyWarning/getId/' + alertId).then(function (response) {
+                    earlyM.$data.form = response.data.ew;
+                    earlyM.$data.showDialogButton = true;
+                    earlyM.$data.dialogFormVisible1 = true
+                }).catch(function (error) {
+                    console.log(error);
+                });
             },
             onSubmit() {
                 earlyM.$data.currentPage = 1;
                 this.fetchData()
             },
-            axiosMessage(cp,ps,q){
+            axiosMessage(cp, ps, q) {
                 axios.post(('http://localhost:8080/earlyWarning/list/' + cp + '/' + ps), q).then(function (response) {
                     earlyM.$data.tableData = response.data.list;
                     earlyM.$data.totalSize = response.data.total;
-                    console.log(response.data.list)
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            commitFinish() {
+                if (earlyM.$data.form.alertId === '') {
+                    axios.post('http://localhost:8080/earlyWarning/add/', earlyM.$data.form).then(function (response) {
+                        if (response.data.res === 1) {
+                            earlyM.$notify({
+                                title: '成功',
+                                message: '添加预警信息成功',
+                                type: 'success'
+                            });
+                        } else {
+                            earlyM.$notify.error({
+                                title: '错误',
+                                message: '添加预警出现异常'
+                            });
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                } else {
+                    axios.post('http://localhost:8080/earlyWarning/modify', earlyM.$data.form).then(function (response) {
+                        if (response.data === 1) {
+                            earlyM.$notify({
+                                title: '成功',
+                                message: '修改预警信息成功',
+                                type: 'success'
+                            });
+                        } else {
+                            earlyM.$notify.error({
+                                title: '错误',
+                                message: '修改预警出现异常'
+                            });
+                        }
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+                }
+                earlyM.$data.dialogFormVisible1 = false;
+                this.onSubmit()
+            },
+            handleSChange(row) {
+                axios.post('http://localhost:8080/earlyWarning/modify', row).then(function (response) {
+                    if (response.data === 1) {
+                        if(row.open === true){
+                            earlyM.$message({
+                                message: '成功启用' + row.alertName,
+                                type: 'success'
+                            });
+                        }else{
+                            earlyM.$message({
+                                message: '已经关闭' + row.alertName,
+                                type: 'warning'
+                            });
+                        }
+                    } else {
+                        earlyM.$notify.error({
+                            title: '错误',
+                            message: '修改预警出现异常'
+                        });
+                    }
                 }).catch(function (error) {
                     console.log(error);
                 });

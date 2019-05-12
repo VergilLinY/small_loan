@@ -14,4 +14,6 @@ public interface EarlyWarningService {
     Integer getCount(EWQualification q);
 
     Integer addNew(EarlyWarningInfo info);
+
+    Integer modifyInfo(EarlyWarningInfo info);
 }

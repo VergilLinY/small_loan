@@ -41,8 +41,12 @@ public class EarlyWarningServiceImpl implements EarlyWarningService {
     @Override
     public Integer addNew(EarlyWarningInfo info) {
         info.setAlertId(Long.toString(idWorker.nextId()));
-        System.out.println(info);
         return earlyWarningMapper.addNew(info);
+    }
+
+    @Override
+    public Integer modifyInfo(EarlyWarningInfo info) {
+        return earlyWarningMapper.modify(info);
     }
 
 

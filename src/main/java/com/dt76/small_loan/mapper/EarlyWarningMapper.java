@@ -14,4 +14,6 @@ public interface EarlyWarningMapper {
     Integer getCount(EWQualification label);
 
     Integer addNew(EarlyWarningInfo info);
+
+    Integer modify(EarlyWarningInfo info);
 }

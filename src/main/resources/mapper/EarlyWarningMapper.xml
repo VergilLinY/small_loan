@@ -17,6 +17,19 @@
     <result property="warningType" column="alert_type"/>
   </resultMap>
 
+  <update id="modify" parameterType="com.dt76.small_loan.pojo.EarlyWarningInfo">
+    UPDATE afterloanearlywarn
+    SET alert_name                    = #{alertName},
+        loan_type                     = #{loanType},
+        loan_product                  = #{loanProduct},
+        loan_fivelevel_classification = #{fiveClassification},
+        early_warning_days            = #{earlyWarningDays},
+        select_member                 = #{selectMember},
+        whether_to_enable             = #{open},
+        alert_time                    = #{warningTime},
+        alert_type                    = #{warningType}
+    WHERE alert_id = #{alertId}
+  </update>
 
 
   <select id="getById" resultMap="EWInfo">

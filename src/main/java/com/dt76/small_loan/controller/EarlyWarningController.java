@@ -27,21 +27,12 @@ public class EarlyWarningController {
         return "/pages/afterloan/earlyWarningManager";
     }
 
-    @GetMapping("/earlyWarning/add")
-    public String jumpToEarlyAdd() {
-        return "/pages/afterloan/earlyWarningAdd";
-    }
 
-    @GetMapping("/earlyWarning/edit/{alertId}")
-    public String jumpToEarlyEdit(@PathVariable String alertId) {
-        System.out.println(alertId);
-        return "/pages/afterloan/earlyWarningEdit";
-    }
-
-    @GetMapping("/earlyWarning/check/{alertId}")
-    public String jumpToEarlyCheck(@PathVariable String alertId) {
-        System.out.println(alertId);
-        return "/pages/afterloan/earlyWarningCheck";
+    //对预警信息执行修改操作
+    @PostMapping("/earlyWarning/modify")
+    @ResponseBody
+    public Integer jumpToEarlyEdit(@RequestBody EarlyWarningInfo form) {
+        return earlyWarningService.modifyInfo(form);
     }
 
     //获取分页的预警信息
@@ -55,6 +46,7 @@ public class EarlyWarningController {
         return map;
     }
 
+    //根据ID查询预警信息
     @GetMapping("/earlyWarning/getId/{id}")
     @ResponseBody
     public Map<String, Object> getById(@PathVariable String id){
