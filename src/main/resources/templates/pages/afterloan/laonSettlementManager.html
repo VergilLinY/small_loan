@@ -78,6 +78,9 @@
                         <el-form-item>
                             <el-button type="primary" icon="el-icon-search" @click="onSubmit()">查询</el-button>
                         </el-form-item>
+                        <el-form-item>
+                            <el-button type="info" icon="el-icon-refresh" @click="handleReset()">重置</el-button>
+                        </el-form-item>
                     </el-form>
                     <br/>
                     <h4 class="card-title">贷款结项列表</h4>
@@ -127,7 +130,6 @@
                         </el-table>
                         <br/>
                         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                                       :hide-on-single-page="true"
                                        :current-page="currentPage" :page-sizes="[5, 10, 20, 40]" :page-size="pageSize"
                                        layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
                         </el-pagination>
@@ -252,6 +254,13 @@
                     console.log(error);
                 });
                 settleM.$data.dialogVisible1 = false;
+                this.onSubmit();
+            },
+            handleReset() {
+                settleM.$data.search.loanId= '';
+                settleM.$data.search.name= '';
+                settleM.$data.search.phone= '';
+                settleM.$data.search.contractNo= '';
                 this.onSubmit();
             }
         }

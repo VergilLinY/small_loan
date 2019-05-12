@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dt76.small_loan.mapper.RepaymentMapper">
+
+
+    <resultMap id="commonsInfo" type="com.dt76.small_loan.pojo.CommonLoanInfo">
+        <id property="loanId" column="boId"/>
+        <result property="userName" column="userName"/>
+        <result property="contractId" column="cId"/>
+        <result property="getLoanDate" column="gld"/>
+        <result property="loanAmount" column="owm"/>
+        <result property="approvalAmount" column="mam"/>
+        <result property="contractAmount" column="mcm"/>
+        <result property="borrowingPeriod" column="olt"/>
+        <result property="loanType" column="lt"/>
+        <result property="repaymentType" column="orm"/>
+        <result property="loanDate" column="alt"/>
+        <result property="borrowType" column="bty"/>
+        <result property="repaymentFinish" column="rps"/>
+    </resultMap>
+
+
+    <select id="getPageList" parameterType="com.dt76.small_loan.pojo.RepaymentQualification" resultMap="commonsInfo">
+        SELECT bO.bo_id            AS boId,
+               u.userName          AS userName,
+               bO.c_id             AS cId,
+               bO.o_createTime     AS gld,
+               bO.o_wantedMoney    AS owm,
+               cs.m_approveMoney   AS mam,
+               cs.m_contractMoney  AS mcm,
+               bO.o_loanTime       AS olt,
+               hlp.Loan_Type       AS lt,
+               bO.o_repayMode      AS orm,
+               apl.al_time         AS alt,
+               lt.l_name           AS bty,
+               bO.repayment_status AS rps
+        FROM borrowOrder bO
+                 left join user u on bO.u_id = u.userId
+                 left join checkState cs on bO.bo_id = cs.bo_id and cs.m_type = 3
+                 left join h_loan_products hlp on hlp.Product_Id = bO.p_id
+                 left join approvalLoan apl on apl.bo_id = bO.bo_id
+                 left join loanType lt on bO.l_type = lt.l_typeId
+        WHERE bO.bo_id LIKE '%${loanId}%'
+          AND u.userName LIKE '%${name}%'
+          AND bO.c_id LIKE '%${contractNo}%'
+          AND hlp.Loan_Type LIKE '%${loanType}%'
+          <if test="dateRange != null">
+              AND bO.o_createTime &gt;= #{dateRange[0]} AND bO.o_createTime &lt;= #{dateRange[1]}
+          </if>
+    </select>
+</mapper>

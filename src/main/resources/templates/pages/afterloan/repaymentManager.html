@@ -43,7 +43,7 @@
 <div class="content-wrapper">
     <div class="page-header">
         <h3 class="page-title">
-            Forms
+            还款管理
         </h3>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
@@ -53,48 +53,46 @@
         </nav>
     </div>
     <div id="app" class="row">
-        <div class="col-12 grid-margin stretch-card">
-            <div class="card">
-                <div class="card-body">
-                    <el-form :inline="true" :model="formInline" class="demo-form-inline">
-                        <el-form-item label="">
-                            <el-input v-model="formInline.user" placeholder="借款编号" style="width:120px"></el-input>
-                        </el-form-item>
-                        <el-form-item label="">
-                            <el-input v-model="formInline.user" placeholder="姓名/手机号" style="width:140px"></el-input>
-                        </el-form-item>
-                        <el-form-item label="">
-                            <el-input v-model="formInline.user" placeholder="合同号" style="width:160px"></el-input>
-                        </el-form-item>
-                        <el-form-item label="">
-                            <el-select v-model="formInline.region" placeholder="贷款类型" style="width:110px">
-                                <el-option label="个人信用" value="1"></el-option>
-                                <el-option label="征信机构" value="2"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-date-picker v-model="value1" type="daterange" range-separator="-" style="width:280px"
-                                        start-placeholder="开始日期" end-placeholder="结束日期" :picker-options="pickerOptions">
-                        </el-date-picker>
-                        <el-form-item>
-                            <el-button type="primary" @click="onSubmit(formInline)">查询</el-button>
-                        </el-form-item>
-                    </el-form>
-                </div>
-            </div>
-        </div>
         <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
                     <template>
+                        <el-form :inline="true" :model="search" class="demo-form-inline">
+                            <el-form-item>
+                                <el-input v-model="search.loanId" placeholder="借款编号" style="width:120px"></el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-input v-model="search.name" placeholder="姓名" style="width:140px"></el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-input v-model="search.contractNo" placeholder="合同号" style="width:160px"></el-input>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-input v-model="search.loanType" placeholder="贷款类型" style="width:160px"></el-input>
+                            </el-form-item>
+                            <el-date-picker v-model="search.dateRange" type="daterange" range-separator="-"
+                                            style="width:280px"
+                                            start-placeholder="开始日期" end-placeholder="结束日期"
+                                            :picker-options="pickerOptions">
+                            </el-date-picker>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <el-form-item>
+                                <el-button type="primary" icon="el-icon-search" @click="onSubmit()">查询</el-button>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-button type="info" icon="el-icon-refresh" @click="handleReset()">重置</el-button>
+                            </el-form-item>
+                        </el-form>
+                        <br/>
                         <el-table :data="tableData" style="width: 100%">
                             <el-table-column type="selection" width="55" align="center"></el-table-column>
-                            <el-table-column prop="loanId" label="借款编号" width="80" align="center"></el-table-column>
+                            <el-table-column prop="loanId" label="借款编号" width="90" align="center"></el-table-column>
                             <el-table-column prop="userName" label="姓名" width="60" align="center"></el-table-column>
-                            <el-table-column prop="contractNo" label="合同号" width="160" align="center">
+                            <el-table-column prop="contractId" label="合同号" width="80" align="center">
                             </el-table-column>
-                            <el-table-column prop="applicationDate" label="申请日期" width="120" align="center">
+                            <el-table-column prop="getLoanDate" label="申请日期" width="110" align="center">
                             </el-table-column>
-                            <el-table-column prop="applicationQuota" label="申请额度" width="80" align="center">
+                            <el-table-column prop="loanAmount" label="申请额度" width="90" align="center">
                             </el-table-column>
                             <el-table-column prop="approvalAmount" label="审批金额" width="80" align="center">
                             </el-table-column>
@@ -106,11 +104,17 @@
                             </el-table-column>
                             <el-table-column prop="repaymentType" label="还款方式" width="90" align="center">
                             </el-table-column>
-                            <el-table-column prop="loanTime" label="放款时间" width="120" align="center">
+                            <el-table-column prop="loanDate" label="放款时间" width="100" align="center">
                             </el-table-column>
-                            <el-table-column prop="loanChannel" label="放款通道" width="90" align="center">
+                            <el-table-column prop="borrowType" label="放款方式" width="90" align="center">
                             </el-table-column>
-                            <el-table-column prop="status" label="状态" width="70" align="center"></el-table-column>
+                            <el-table-column label="状态" width="90" align="center">
+                                <template slot-scope="scope">
+                                    <el-tag v-if="scope.row.repaymentFinish===true" type="danger">还款中
+                                    </el-tag>
+                                    <el-tag v-else type="success">已还清</el-tag>
+                                </template>
+                            </el-table-column>
                             <el-table-column fixed="right" label="操作" width="170" align="center">
                                 <template slot-scope="scope">
                                     <el-button size="mini" @click="handleShow(scope.row)">查看</el-button>
@@ -120,15 +124,15 @@
                                 </template>
                             </el-table-column>
                         </el-table>
+                        <br/>
                         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                                       :current-page="currentPage" :page-sizes="[5, 10, 20, 40]" :page-size="pagesize"
-                                       layout="total, sizes, prev, pager, next, jumper" :total="50">
+                                       :current-page="currentPage" :page-sizes="[5, 10, 20, 40]" :page-size="pageSize"
+                                       layout="total, sizes, prev, pager, next, jumper" :total="totalSize">
                         </el-pagination>
                     </template>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -147,13 +151,16 @@
     var vm = new Vue({
         el: '#app',
         data: {
-            testEle: 'hope',
-            formInline: {
-                user: '',
-                region: ''
+            search: {
+                loanId: '',
+                name: '',
+                contractNo: '',
+                loanType: '',
+                dateRange: ''
             },
-            currentPage: 1, //初始页
-            pagesize: 5,    //    每页的数据
+            currentPage: 1,
+            pageSize: 5,
+            totalSize: 0,
             pickerOptions: {
                 shortcuts: [{
                     text: '最近一周',
@@ -181,37 +188,55 @@
                     }
                 }]
             },
-            value1: '',
             tableData: []
         },
-        created(){
+        created() {
             this.fetchData()
         },
         methods: {
             fetchData() {
-                axios.get('http://localhost:8080/tryAxios').then(function (response) {
-                    vm.$data.tableData = response.data.repaymentInfo
-                }).catch(function (error) {
-                    console.log(error);
-                });
+                var cp = String(this.currentPage);
+                var ps = String(this.pageSize);
+                var q = this.search;
+                this.axiosMessage(cp, ps, q)
             },
-            // 初始页currentPage、初始每页数据数pagesize和数据data
             handleSizeChange: function (size) {
-                this.pagesize = size;
-                console.log(this.pagesize)  //每页下拉显示数据
+                vm.$data.currentPage = 1;
+                vm.$data.pageSize = size;
+                this.fetchData()
             },
             handleCurrentChange: function (currentPage) {
-                this.currentPage = currentPage;
-                console.log(this.currentPage)  //点击第几页
-            },
-            handleRepaymentList() {
-
+                this.$data.currentPage = currentPage;
+                this.fetchData()
             },
             handleShow(row) {
                 window.location.href = 'http://localhost:8080/tryAxios/view/' + row.loanId
             },
             handleReRecord(loanId) {
                 window.location.href = 'http://localhost:8080/repayment/check/' + loanId
+            },
+            axiosMessage(cp, ps, q) {
+                if (q.dateRange === '') {
+                    q.dateRange = null
+                }
+                axios.post(('http://localhost:8080/repayment/list/' + cp + '/' + ps), q).then(function (response) {
+                    vm.$data.tableData = response.data.rows;
+                    vm.$data.totalSize = response.data.total;
+                }).catch(function (error) {
+                    console.log(error);
+                });
+            },
+            onSubmit() {
+                vm.$data.currentPage = 1;
+                this.fetchData()
+            },
+            handleReset() {
+                vm.$data.search.loanId = '';
+                vm.$data.search.name = '';
+                vm.$data.search.contractNo = '';
+                vm.$data.search.loanType = '';
+                vm.$data.search.dateRange = '';
+                this.onSubmit();
             }
         }
     });
